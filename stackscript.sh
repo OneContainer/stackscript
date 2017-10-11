@@ -10,6 +10,7 @@ PORTS_USED="^${PORTS_USED}$"
 
 SS_PASSWORD=`dd if=/dev/urandom bs=32 count=1 | md5sum | cut -c-32`
 SS_PORT=`seq 1025 9000 | grep -v -E "$PORTS_USED" | shuf -n 1`
+SS_LB_PORT=$(($SS_PORT + 1))
 
 wget https://raw.githubusercontent.com/shadowsocks/stackscript/master/shadowsocks.json -O /etc/shadowsocks.json
 wget https://raw.githubusercontent.com/shadowsocks/stackscript/master/shadowsocks.conf -O /etc/supervisor/conf.d/shadowsocks.conf
@@ -17,6 +18,7 @@ wget https://raw.githubusercontent.com/shadowsocks/stackscript/master/local.conf
 
 sed -i -e s/SS_PASSWORD/$SS_PASSWORD/ /etc/shadowsocks.json
 sed -i -e s/SS_PORT/$SS_PORT/ /etc/shadowsocks.json
+sed -i -e s/SS_LB_PORT/$SS_LB_PORT/ /etc/shadowsocks.json
 
 sysctl --system
 
@@ -25,3 +27,8 @@ echo 'ulimit -n 51200' >> /etc/default/supervisor
 service supervisor start
 
 supervisorctl reload
+
+sysctl net.ipv4.tcp_available_congestion_control
+echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
+echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
+sysctl -p
