@@ -12,9 +12,9 @@ SS_PASSWORD=`dd if=/dev/urandom bs=32 count=1 | md5sum | cut -c-32`
 SS_PORT=`seq 1025 9000 | grep -v -E "$PORTS_USED" | shuf -n 1`
 SS_LB_PORT=$(($SS_PORT + 1))
 
-wget https://raw.githubusercontent.com/shadowsocks/stackscript/master/shadowsocks.json -O /etc/shadowsocks.json
-wget https://raw.githubusercontent.com/shadowsocks/stackscript/master/shadowsocks.conf -O /etc/supervisor/conf.d/shadowsocks.conf
-wget https://raw.githubusercontent.com/shadowsocks/stackscript/master/local.conf -O /etc/sysctl.d/local.conf
+wget https://raw.githubusercontent.com/OneContainer/stackscript/master/shadowsocks.json -O /etc/shadowsocks.json
+wget https://raw.githubusercontent.com/OneContainer/stackscript/master/shadowsocks.conf -O /etc/supervisor/conf.d/shadowsocks.conf
+wget https://raw.githubusercontent.com/OneContainer/stackscript/master/local.conf -O /etc/sysctl.d/local.conf
 
 sed -i -e s/SS_PASSWORD/$SS_PASSWORD/ /etc/shadowsocks.json
 sed -i -e s/SS_PORT/$SS_PORT/ /etc/shadowsocks.json
