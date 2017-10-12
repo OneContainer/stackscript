@@ -20,11 +20,20 @@ sed -i -e s/SS_PASSWORD/$SS_PASSWORD/ /etc/shadowsocks.json
 sed -i -e s/SS_PORT/$SS_PORT/ /etc/shadowsocks.json
 sed -i -e s/SS_LB_PORT/$SS_LB_PORT/ /etc/shadowsocks.json
 
+bash <(curl -L -s https://install.direct/go.sh)
+wget https://raw.githubusercontent.com/OneContainer/stackscript/master/v2ray/config.json -O /etc/v2ray/config.json
+
+V2RAY_UUID=`curl -X GET https://www.uuidgenerator.net/ | grep -Po '(?<=^<h2 class="uuid">)[a-z0-9-]+'`
+
+sed -i -e s/V2RAY_UUID/$V2RAY_UUID/ /etc/v2ray/config.json
+sed -i -e s/SS_PORT/$SS_PORT/ /etc/v2ray/config.json
+
 sysctl --system
 
 service supervisor stop
 echo 'ulimit -n 51200' >> /etc/default/supervisor
 service supervisor start
+service v2ray start
 
 supervisorctl reload
 
