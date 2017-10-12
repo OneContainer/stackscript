@@ -10,7 +10,7 @@ PORTS_USED="^${PORTS_USED}$"
 
 SS_PASSWORD=`dd if=/dev/urandom bs=32 count=1 | md5sum | cut -c-32`
 SS_PORT=`seq 1025 9000 | grep -v -E "$PORTS_USED" | shuf -n 1`
-SS_LB_PORT=$(($SS_PORT + 1))
+SS_LB_PORT=`seq 1025 9000 | grep -v -E "$PORTS_USED $SS_PORT" | shuf -n 1`
 
 wget https://raw.githubusercontent.com/OneContainer/stackscript/master/shadowsocks.json -O /etc/shadowsocks.json
 wget https://raw.githubusercontent.com/OneContainer/stackscript/master/shadowsocks.conf -O /etc/supervisor/conf.d/shadowsocks.conf
@@ -24,9 +24,10 @@ bash <(curl -L -s https://install.direct/go.sh)
 wget https://raw.githubusercontent.com/OneContainer/stackscript/master/v2ray/config.json -O /etc/v2ray/config.json
 
 V2RAY_UUID=`curl -X GET https://www.uuidgenerator.net/ | grep -Po '(?<=^<h2 class="uuid">)[a-z0-9-]+'`
+V2RAY_PORT=`seq 1025 9000 | grep -v -E "$PORTS_USED $SS_PORT $SS_LB_PORT" | shuf -n 1`
 
 sed -i -e s/V2RAY_UUID/$V2RAY_UUID/ /etc/v2ray/config.json
-sed -i -e s/SS_PORT/$SS_PORT/ /etc/v2ray/config.json
+sed -i -e s/V2RAY_PORT/$V2RAY_PORT/ /etc/v2ray/config.json
 
 sysctl --system
 
@@ -41,3 +42,14 @@ supervisorctl reload
 echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
 echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
 sysctl -p
+
+echo "*******shadowsocks configuration*******"
+echo "Port: $SS_PORT"
+echo "Load balance port: $SS_LB_PORT"
+echo "Password: $SS_PASSWORD"
+echo "*******shadowsocks configuration*******"
+echo ""
+echo "*******v2ray configuration*******"
+echo "Port: $V2RAY_PORT"
+echo "UUID: $V2RAY_UUID"
+echo "*******v2ray  configuration*******"
