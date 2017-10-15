@@ -23,7 +23,7 @@ sed -i -e s/SS_LB_PORT/$SS_LB_PORT/ /etc/shadowsocks.json
 bash <(curl -L -s https://install.direct/go.sh)
 wget https://raw.githubusercontent.com/OneContainer/stackscript/master/v2ray/config.json -O /etc/v2ray/config.json
 
-V2RAY_UUID=`curl -X GET https://www.uuidgenerator.net/ | grep -Po '(?<=^<h2 class="uuid">)[a-z0-9-]+'`
+V2RAY_UUID=`curl -s -X GET https://www.uuidgenerator.net/ | grep -Po '(?<=^<h2 class="uuid">)[a-z0-9-]+'`
 V2RAY_PORT=`seq 1025 9000 | grep -v -E "$PORTS_USED $SS_PORT $SS_LB_PORT" | shuf -n 1`
 
 sed -i -e s/V2RAY_UUID/$V2RAY_UUID/ /etc/v2ray/config.json
@@ -43,13 +43,10 @@ echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
 echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
 sysctl -p
 
-echo "*******shadowsocks configuration*******"
+echo "\n*******shadowsocks configuration*******"
 echo "Port: $SS_PORT"
 echo "Load balance port: $SS_LB_PORT"
 echo "Password: $SS_PASSWORD"
-echo "*******shadowsocks configuration*******"
-echo ""
-echo "*******v2ray configuration*******"
+echo "\n*******v2ray configuration*******"
 echo "Port: $V2RAY_PORT"
 echo "UUID: $V2RAY_UUID"
-echo "*******v2ray  configuration*******"
