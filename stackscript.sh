@@ -1,8 +1,15 @@
 #!/bin/bash
 
 apt-get update
-apt-get install -y -qq python-pip python-m2crypto supervisor
-pip install shadowsocks
+apt-get install software-properties-common -y
+add-apt-repository ppa:max-c-lv/shadowsocks-libev -y
+apt-get update
+apt-get install -y -qq supervisor shadowsocks-libev
+
+apt-get install --no-install-recommends build-essential autoconf libtool libssl-dev libpcre3-dev libev-dev asciidoc xmlto automake
+git clone --recursive https://github.com/shadowsocks/simple-obfs.git
+cd simple-obfs && ./autogen.sh
+./configure && make && make install
 
 PORTS_USED=`netstat -antl |grep LISTEN | awk '{ print $4 }' | cut -d: -f2|sed '/^$/d'|sort`
 PORTS_USED=`echo $PORTS_USED|sed 's/\s/$\|^/g'`
